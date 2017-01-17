@@ -6,8 +6,6 @@ import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Message;
 
-import com.example.helldefender.rvfunction.util.progress.ProgressCancelListener;
-
 /**
  * Created by Helldefender on 2016/10/27.
  */

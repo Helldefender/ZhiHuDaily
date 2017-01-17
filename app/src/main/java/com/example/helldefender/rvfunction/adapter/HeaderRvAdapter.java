@@ -13,8 +13,6 @@ import android.view.ViewGroup;
 
 public class HeaderRvAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int BASE_HEADERVIEW_ITEM = 10000;
-    // headerview footerview footer 都是强引用
-    //
     private SparseArrayCompat<View> headerViews = new SparseArrayCompat<View>();
     private RecyclerView.Adapter mInnerAdapter;
 

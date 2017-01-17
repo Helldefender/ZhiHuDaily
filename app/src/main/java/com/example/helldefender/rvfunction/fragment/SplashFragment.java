@@ -3,17 +3,23 @@ package com.example.helldefender.rvfunction.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.helldefender.rvfunction.R;
 import com.example.helldefender.rvfunction.activity.MainActivity;
-import com.example.helldefender.rvfunction.entity.TEntity;
+import com.example.helldefender.rvfunction.app.BaseFragment;
+import com.example.helldefender.rvfunction.entity.SplashBean;
 import com.example.helldefender.rvfunction.http.HttpMethods;
 import com.example.helldefender.rvfunction.subscriber.ProgressSubscriber;
 import com.example.helldefender.rvfunction.subscriber.SubscriberOnNextListener;
 import com.example.helldefender.rvfunction.util.ActivityUtil;
+
+import java.util.concurrent.TimeUnit;
+
+import rx.Observable;
+import rx.Subscription;
+import rx.functions.Action1;
 
 /**
  * Created by Helldefender on 2016/10/25.
@@ -21,31 +27,33 @@ import com.example.helldefender.rvfunction.util.ActivityUtil;
 
 public class SplashFragment extends BaseFragment {
     private TextView textView;
-    private ImageView imageView;
-    private Button button;
+    private ImageView splashImage;
+//    private ImageView taijiImage;
+//    private ImageView hourglassImage;
     private SubscriberOnNextListener subscriberOnNextListener;
+    private Subscription subscription;
 
     @Override
     protected void initView(View view, Bundle savedInstanceState) {
-        textView = (TextView) view.findViewById(R.id.splash_textview);
-        imageView = (ImageView) view.findViewById(R.id.splash_imageview);
-        button = (Button) view.findViewById(R.id.splash_button);
-        subscriberOnNextListener = new SubscriberOnNextListener<TEntity>() {
+        handleView(view);
+
+        subscriberOnNextListener = new SubscriberOnNextListener<SplashBean>() {
             @Override
-            public void onNext(TEntity tEntity) {
-                textView.setText(tEntity.getText());
-                ActivityUtil.handleImageByGlide(getHoldingActivity(),tEntity.getImg(),imageView);
+            public void onNext(SplashBean splashBean) {
+                textView.setText(splashBean.getText());
+                ActivityUtil.handleImageByGlide(getHoldingActivity(),splashBean.getImg(),splashImage);
+               subscription=Observable.timer(2000, TimeUnit.MILLISECONDS)
+                        .subscribe(new Action1<Long>() {
+                            @Override
+                            public void call(Long aLong) {
+                                Intent intent = new Intent(getHoldingActivity(), MainActivity.class);
+                                startActivity(intent);
+                            }
+                        });
             }
         };
+
         httpRequestGet();
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), MainActivity.class);
-                startActivity(intent);
-                baseActivity.finish();
-            }
-        });
     }
 
     @Override
@@ -58,6 +66,21 @@ public class SplashFragment extends BaseFragment {
     }
 
     protected void httpRequestGet() {
-        HttpMethods.getInstance().getHttpInfo(new ProgressSubscriber<TEntity>(subscriberOnNextListener, getHoldingActivity()),101,1);
+        HttpMethods.getInstance().getNewSplash(new ProgressSubscriber<SplashBean>(subscriberOnNextListener, getHoldingActivity()));
+    }
+
+    private void handleView(View view) {
+        textView = (TextView) view.findViewById(R.id.splash_textview);
+        splashImage = (ImageView) view.findViewById(R.id.splash_imageview);
+//        taijiImage = (ImageView) view.findViewById(R.id.imageview_taiji);
+//        hourglassImage = (ImageView) view.findViewById(R.id.imageview_hourglass);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (!subscription.isUnsubscribed()) {
+            subscription.unsubscribe();
+        }
     }
 }

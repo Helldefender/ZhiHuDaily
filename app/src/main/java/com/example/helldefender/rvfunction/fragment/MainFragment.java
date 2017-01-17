@@ -7,7 +7,6 @@ import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
@@ -26,7 +25,8 @@ import com.example.helldefender.rvfunction.activity.NewContentActivity;
 import com.example.helldefender.rvfunction.adapter.HeaderRvAdapter;
 import com.example.helldefender.rvfunction.adapter.ImageAdapter;
 import com.example.helldefender.rvfunction.adapter.NewsRVAdapter;
-import com.example.helldefender.rvfunction.entity.TEntity;
+import com.example.helldefender.rvfunction.app.BaseFragment;
+import com.example.helldefender.rvfunction.entity.NewsBean;
 import com.example.helldefender.rvfunction.http.HttpMethods;
 import com.example.helldefender.rvfunction.subscriber.ProgressSubscriber;
 import com.example.helldefender.rvfunction.subscriber.SubscriberOnNextListener;
@@ -49,6 +49,7 @@ public class MainFragment extends BaseFragment {
     private ViewPager mViewPager;
     private RelativeLayout.LayoutParams viewPagerLP;
     private RelativeLayout.LayoutParams linearLP;
+    private ImageAdapter imageAdapter;
 
     private ImageView[] imageIndicators;
 
@@ -60,12 +61,11 @@ public class MainFragment extends BaseFragment {
     private HeaderRvAdapter mHeaderRvAdapter;
     private NewsRVAdapter newsRVAdapter;
 
-    private SubscriberOnNextListener subscriberOnNextListener;
-    private SubscriberOnNextListener loadingMoreListener;
-    private List<TEntity.StoriesBean> storiesList;
-    private List<TEntity.TopStoriesBean> topStoriesList;
+    private SubscriberOnNextListener newsListener;
+    private SubscriberOnNextListener loadMoreNewsListener;
+    private List<NewsBean.StoriesBean> storiesList;
+    private List<NewsBean.TopStoriesBean> topStoriesList;
 
-    private ActionMenuView actionMenuView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private FloatingActionButton floatingActionButton;
 
@@ -73,12 +73,6 @@ public class MainFragment extends BaseFragment {
 
     protected void initView(View view, Bundle savedInstanceState) {
         handleView(view);
-
-//        AppActivity appActivity = (AppActivity) baseActivity;
-//        actionMenuView = appActivity.actionMenuView;
-//        actionMenuView.getMenu().clear();
-//        appActivity.getMenuInflater().inflate(R.menu.setting, actionMenuView.getMenu());
-//        actionMenuView.setOnMenuItemClickListener(this);
 
         ((AppActivity) baseActivity).toolbar.setTitle("知乎日报");
 
@@ -91,7 +85,7 @@ public class MainFragment extends BaseFragment {
                         mHeaderRvAdapter.notifyDataSetChanged();
                         mSwipeRefreshLayout.setRefreshing(false);
                     }
-                },1500);
+                }, 1500);
             }
         });
         mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(android.R.color.holo_blue_bright), getResources().getColor(android.R.color.holo_green_light), getResources().getColor(android.R.color.holo_orange_light));
@@ -104,20 +98,20 @@ public class MainFragment extends BaseFragment {
             }
         });
 
-        subscriberOnNextListener = new SubscriberOnNextListener<TEntity>() {
+        newsListener = new SubscriberOnNextListener<NewsBean>() {
             @Override
-            public void onNext(TEntity tEntity) {
+            public void onNext(NewsBean newsBean) {
                 int i = 0;
-                for (TEntity.StoriesBean storiesBean : tEntity.getStories()) {
-                    storiesBean.setData(tEntity.getDate());
+                for (NewsBean.StoriesBean storiesBean : newsBean.getStories()) {
+                    storiesBean.setData(newsBean.getDate());
                     storiesList.add(storiesBean);
                 }
-                for (TEntity.TopStoriesBean topStoriesBean : tEntity.getTop_stories()) {
+                for (NewsBean.TopStoriesBean topStoriesBean : newsBean.getTop_stories()) {
+                    topStoriesList.add(topStoriesBean);
                     ActivityUtil.handleImageByGlide(getHoldingActivity(), topStoriesBean.getImage(), (ImageView) views.get(i).findViewById(R.id.item_viewpager_image));
                     handleText((TextView) views.get(i).findViewById(R.id.item_viewpager_textview), topStoriesBean.getTitle());
                     i++;
                 }
-
                 mHeaderRvAdapter = new HeaderRvAdapter(newsRVAdapter);
                 mHeaderRvAdapter.addHeaderView(mRelativeLayout);
                 mRecyclerView.setAdapter(mHeaderRvAdapter);
@@ -126,11 +120,11 @@ public class MainFragment extends BaseFragment {
 
         httpRequestGet();
 
-        loadingMoreListener = new SubscriberOnNextListener<TEntity>() {
+        loadMoreNewsListener = new SubscriberOnNextListener<NewsBean>() {
             @Override
-            public void onNext(TEntity tEntity) {
-                for (TEntity.StoriesBean storiesBean : tEntity.getStories()) {
-                    storiesBean.setData(tEntity.getDate());
+            public void onNext(NewsBean newsBean) {
+                for (NewsBean.StoriesBean storiesBean : newsBean.getStories()) {
+                    storiesBean.setData(newsBean.getDate());
                     storiesList.add(storiesBean);
                 }
                 newsRVAdapter.notifyDataSetChanged();
@@ -178,7 +172,7 @@ public class MainFragment extends BaseFragment {
         //开始轮播
         handler.sendEmptyMessageDelayed(ImageHandler.MSG_KEEP_SILENT, ImageHandler.MSG_DELAY);
 
-        newsRVAdapter.setOnItemClickLitener(new NewsRVAdapter.OnItemClickLitener() {
+        newsRVAdapter.setOnItemClickListener(new NewsRVAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 Bundle bundle = new Bundle();
@@ -207,6 +201,17 @@ public class MainFragment extends BaseFragment {
                 return false;
             }
         });
+
+        imageAdapter.setOnItemClickListener(new ImageAdapter.onItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                Bundle bundle = new Bundle();
+                bundle.putInt("newsId", topStoriesList.get(position%5).getId());
+                Intent intent = new Intent(getHoldingActivity(), NewContentActivity.class);
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }
+        });
     }
 
     private void handleView(View view) {
@@ -220,6 +225,7 @@ public class MainFragment extends BaseFragment {
         mRelativeLayout.addView(mViewPager);
 
         views = new ArrayList<RelativeLayout>();
+        imageAdapter = new ImageAdapter(views);
         handleViewPageItem();
 
         mLinearLayout = new LinearLayout(getHoldingActivity());
@@ -239,8 +245,8 @@ public class MainFragment extends BaseFragment {
         mLinearLayoutManager = new LinearLayoutManager(getHoldingActivity());
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
 
-        storiesList = new ArrayList<TEntity.StoriesBean>();
-        topStoriesList = new ArrayList<TEntity.TopStoriesBean>();
+        storiesList = new ArrayList<NewsBean.StoriesBean>();
+        topStoriesList = new ArrayList<NewsBean.TopStoriesBean>();
         newsRVAdapter = new NewsRVAdapter(storiesList, getHoldingActivity());
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
@@ -270,7 +276,7 @@ public class MainFragment extends BaseFragment {
         views.add((RelativeLayout) LayoutInflater.from(getActivity()).inflate(R.layout.item_viewpager, null));
         views.add((RelativeLayout) LayoutInflater.from(getActivity()).inflate(R.layout.item_viewpager, null));
         views.add((RelativeLayout) LayoutInflater.from(getActivity()).inflate(R.layout.item_viewpager, null));
-        mViewPager.setAdapter(new ImageAdapter(views));
+        mViewPager.setAdapter(imageAdapter);
     }
 
     private void handleText(TextView textView, String string) {
@@ -283,23 +289,18 @@ public class MainFragment extends BaseFragment {
     }
 
     private void httpRequestGet() {
-        HttpMethods.getInstance().getHttpInfo(new ProgressSubscriber<TEntity>(subscriberOnNextListener, getHoldingActivity()), 102, 1);
+        HttpMethods.getInstance().getNewsLatest(new ProgressSubscriber<NewsBean>(newsListener, getHoldingActivity()));
 
     }
 
     private void httpRequestLoadMore(int preData) {
-        HttpMethods.getInstance().getHttpInfo(new ProgressSubscriber<TEntity>(loadingMoreListener, getHoldingActivity()), preData, 3);
+        HttpMethods.getInstance().getNewsBefore(new ProgressSubscriber<NewsBean>(loadMoreNewsListener, getHoldingActivity()), preData);
     }
 
     public static MainFragment getInstance() {
         MainFragment mainFragment = new MainFragment();
         return mainFragment;
     }
-
-//    @Override
-//    public boolean onMenuItemClick(MenuItem item) {
-//        return false;
-//    }
 
     private static class ImageHandler extends Handler {
         //请求更新显示view
@@ -324,7 +325,7 @@ public class MainFragment extends BaseFragment {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             MainFragment fragment = weakReference.get();
-            //activiyy已经回收，无需再处理ui
+            //activity已经回收，无需再处理ui
             if (fragment == null) {
                 return;
             }

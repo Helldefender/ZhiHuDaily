@@ -19,6 +19,16 @@ public class ImageAdapter extends PagerAdapter {
         this.viewList = viewList;
     }
 
+    public interface onItemClickListener {
+        void onItemClick(View view,int position);
+    }
+
+    onItemClickListener onItemClickListener;
+
+    public void setOnItemClickListener(onItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
     @Override
 
     public int getCount() {
@@ -45,6 +55,13 @@ public class ImageAdapter extends PagerAdapter {
             viewGroup.removeView(view);
         }
         container.addView(view);
+        final int finalPosition = position;
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onItemClickListener.onItemClick(v, finalPosition);
+            }
+        });
         return view;
     }
 

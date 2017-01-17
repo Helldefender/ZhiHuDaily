@@ -1,75 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-        <group android:checkableBehavior="single">
-            <item
-                android:id="@+id/home"
-                android:checked="true"
-                android:icon="@mipmap/ic_launcher"
-                android:title="首页" />
-            <item
-                android:id="@+id/daily_psy"
-                android:icon="@mipmap/ic_launcher"
-                android:title="日常心理学" />
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/home"
+            android:checked="true"
+            android:icon="@mipmap/ic_launcher"
+            android:title="首页" />
+        <item
+            android:id="@+id/daily_psy"
+            android:icon="@mipmap/ic_launcher"
+            android:title="日常心理学" />
 
+        <item
+            android:id="@+id/user_recommend"
+            android:icon="@mipmap/ic_launcher"
+            android:title="用户推荐日报" />
+        <item
+            android:id="@+id/movie"
+            android:icon="@mipmap/ic_launcher"
+            android:title="电影日报" />
+        <item
+            android:id="@+id/interesting"
+            android:icon="@mipmap/ic_launcher"
+            android:title="不许无聊" />
+        <item
+            android:id="@+id/design"
+            android:icon="@mipmap/ic_launcher"
+            android:title="设计日报" />
+        <item
+            android:id="@+id/business"
+            android:icon="@mipmap/ic_launcher"
+            android:title="大公司日报" />
+        <item
+            android:id="@+id/economic"
+            android:icon="@mipmap/ic_launcher"
+            android:title="财经日报" />
+        <item
+            android:id="@+id/internet_security"
+            android:icon="@mipmap/ic_launcher"
+            android:title="互联网安全" />
+        <item
+            android:id="@+id/games"
+            android:icon="@mipmap/ic_launcher"
+            android:title="开始游戏" />
+        <item
+            android:id="@+id/music"
+            android:icon="@mipmap/ic_launcher"
+            android:title="音乐日报" />
+        <item
+            android:id="@+id/comic"
+            android:icon="@mipmap/ic_launcher"
+            android:title="动漫日报" />
+        <item
+            android:id="@+id/physical"
+            android:icon="@mipmap/ic_launcher"
+            android:title="体育日报" />
+    </group>
+    <item
+        android:title="其他">
+        <menu>
             <item
-                android:id="@+id/user_recommend"
+                android:id="@+id/collect"
                 android:icon="@mipmap/ic_launcher"
-                android:title="用户推荐日报" />
+                android:title="我的收藏" />
             <item
-                android:id="@+id/movie"
+                android:id="@+id/setting"
                 android:icon="@mipmap/ic_launcher"
-                android:title="电影日报" />
-            <item
-                android:id="@+id/interesting"
-                android:icon="@mipmap/ic_launcher"
-                android:title="不许无聊" />
-            <item
-                android:id="@+id/design"
-                android:icon="@mipmap/ic_launcher"
-                android:title="设计日报" />
-            <item
-                android:id="@+id/business"
-                android:icon="@mipmap/ic_launcher"
-                android:title="大公司日报" />
-            <item
-                android:id="@+id/economic"
-                android:icon="@mipmap/ic_launcher"
-                android:title="财经日报" />
-            <item
-                android:id="@+id/internet_security"
-                android:icon="@mipmap/ic_launcher"
-                android:title="互联网安全" />
-            <item
-                android:id="@+id/games"
-                android:icon="@mipmap/ic_launcher"
-                android:title="开始游戏" />
-            <item
-                android:id="@+id/music"
-                android:icon="@mipmap/ic_launcher"
-                android:title="音乐日报" />
-            <item
-                android:id="@+id/comic"
-                android:icon="@mipmap/ic_launcher"
-                android:title="动漫日报" />
-            <item
-                android:id="@+id/physical"
-                android:icon="@mipmap/ic_launcher"
-                android:title="体育日报" />
-        </group>
-            <item android:title="其他">
-                <menu>
-                    <group
-                        android:checkableBehavior="single">
-                        <item
-                            android:id="@+id/collect"
-                            android:icon="@mipmap/ic_launcher"
-                            android:title="我的收藏" />
-                        <item
-                            android:id="@+id/setting"
-                            android:icon="@mipmap/ic_launcher"
-                            android:title="设置" />
-                    </group>
+                android:title="设置" />
+        </menu>
 
-                </menu>
-            </item>
+    </item>
 </menu>

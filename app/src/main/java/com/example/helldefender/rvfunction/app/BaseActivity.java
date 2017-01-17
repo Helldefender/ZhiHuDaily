@@ -12,7 +12,6 @@ import android.view.WindowManager;
 
 import com.example.helldefender.rvfunction.R;
 import com.example.helldefender.rvfunction.entity.DayNight;
-import com.example.helldefender.rvfunction.fragment.BaseFragment;
 import com.example.helldefender.rvfunction.util.DayNightHelper;
 
 /**
@@ -23,6 +22,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
+
     protected DayNightHelper mDayNightHelper;
 
     protected abstract int getContentViewId();

@@ -7,6 +7,7 @@ import android.widget.CompoundButton;
 
 import com.example.helldefender.rvfunction.R;
 import com.example.helldefender.rvfunction.activity.MainActivity;
+import com.example.helldefender.rvfunction.app.BaseFragment;
 
 /**
  * Created by Helldefender on 2016/11/9.

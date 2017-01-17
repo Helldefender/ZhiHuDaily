@@ -3,11 +3,14 @@
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/drawer_header_layout"
-    android:background="?attr/mColorAccent">
+    android:background="?attr/mColorAccent"
+    android:paddingTop="25dp">
+
     <ImageView
         android:id="@+id/drawer_header_image"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"/>
     <TextView
         android:id="@+id/drawer_header_text"
         android:layout_width="match_parent"
@@ -16,8 +19,8 @@
         android:layout_margin="10dp"
         android:clickable="true"
         android:text="请登录"
-        android:drawableLeft="@mipmap/ic_launcher"
-        android:gravity="center_horizontal"
-        android:textSize="16sp"
+        android:gravity="center"
+        android:layout_gravity="center_vertical"
+        android:textSize="20sp"
         android:drawablePadding="10dp"/>
 </LinearLayout>

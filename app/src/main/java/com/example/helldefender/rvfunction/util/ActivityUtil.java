@@ -17,7 +17,8 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.example.helldefender.rvfunction.entity.TEntity;
+import com.example.helldefender.rvfunction.app.MyApplication;
+import com.example.helldefender.rvfunction.entity.NewsContentBean;
 
 /**
  * Created by Helldefender on 2016/10/19.
@@ -32,19 +33,19 @@ public class ActivityUtil {
                 .into(imageView);
     }
 
-    public static String structHtml(TEntity tEntity) {
+    public static String structHtml(NewsContentBean newsContentBean) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("<div class=\"img-wrap\">")
                 .append("<h1 class=\"headline-title\">")
-                .append(tEntity.getTitle()).append("</h1>")
+                .append(newsContentBean.getTitle()).append("</h1>")
                 .append("<span class=\"img-source\">")
-                .append(tEntity.getImage_source()).append("</span>")
-                .append("<img src=\"").append(tEntity.getImage())
+                .append(newsContentBean.getImage_source()).append("</span>")
+                .append("<img src=\"").append(newsContentBean.getImage())
                 .append("\" alt=\"\">")
                 .append("<div class=\"img-mask\"></div>");
         String mNewsContent = "<link rel=\"stylesheet\" type=\"text/css\" href=\"news_content_style.css\"/>"
                 + "<link rel=\"stylesheet\" type=\"text/css\" href=\"news_header_style.css\"/>"
-                + tEntity.getBody().replace("<div class=\"img-place-holder\">", stringBuilder.toString());
+                + newsContentBean.getBody().replace("<div class=\"img-place-holder\">", stringBuilder.toString());
         return mNewsContent;
     }
 
@@ -74,8 +75,8 @@ public class ActivityUtil {
         });
     }
 
-    public static boolean isNetworkAvailable(Context context) {
-        ConnectivityManager connectivity = (ConnectivityManager) context
+    public static boolean isNetworkAvailable() {
+        ConnectivityManager connectivity = (ConnectivityManager) MyApplication.getInstance()
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivity != null) {
             NetworkInfo info = connectivity.getActiveNetworkInfo();
@@ -87,6 +88,4 @@ public class ActivityUtil {
         }
         return false;
     }
-
-
 }

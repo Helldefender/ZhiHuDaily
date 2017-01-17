@@ -48,23 +48,6 @@ public class InfoStorageManager {
         return result;
     }
 
-    public void savaThemes(String data) {
-        if (null != data) {
-            ContentValues contentValues = new ContentValues();
-            contentValues.put("themes", data);
-            db.insert("Themes", null, contentValues);
-        }
-    }
-
-    public String getThemes() {
-        Cursor cursor = db.query("Themes", null, "id=?", new String[]{1 + ""}, null, null, null);
-        String result = null;
-        while (cursor.moveToNext()) {
-            result = cursor.getString(cursor.getColumnIndex("themes"));
-        }
-        return result;
-    }
-
     public void saveThemeNews(String data, int id) {
         if (data != null) {
             ContentValues contentValues = new ContentValues();
@@ -129,15 +112,13 @@ public class InfoStorageManager {
     }
 
     public String getCollectionContent(int id) {
-        StringBuilder stringBuilder = new StringBuilder();
+        String result=null;
         Cursor cursor = db.query("SavedNewsId", null, "newsId=?", new String[]{id + ""}, null, null, null);
         if (cursor.moveToFirst()) {
-            String result = cursor.getString(cursor.getColumnIndex("newsContent"));
-            stringBuilder.append(result);
+            result = cursor.getString(cursor.getColumnIndex("newsContent"));
         }
         cursor.close();
-        String temp = stringBuilder.toString();
-        return temp;
+        return result;
     }
 
     public void saveSupportInfo(int id, int supportQuantity) {
@@ -163,15 +144,59 @@ public class InfoStorageManager {
         cursor.close();
         return supportInfo;
     }
+
     public String getSupportQuantity(int id) {
-        String quantity=null;
+        String quantity = null;
         Cursor cursor = db.query("SupportInfo", null, "newId=?", new String[]{id + ""}, null, null, null);
         if (cursor.moveToFirst()) {
             do {
-                quantity=cursor.getInt(cursor.getColumnIndex("supportQuantity"))+"";
+                quantity = cursor.getInt(cursor.getColumnIndex("supportQuantity")) + "";
             } while (cursor.moveToNext());
         }
         cursor.close();
         return quantity;
+    }
+
+    public void saveUserInfo(String userName, String password, String email) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("userName", userName);
+        contentValues.put("password", password);
+        contentValues.put("email", email);
+        db.insert("UsersInfo", null, contentValues);
+    }
+
+    public List<String> getUserName() {
+        List userNameList = new ArrayList<String>();
+        Cursor cursor = db.query("UsersInfo", null, null, null, null, null, null);
+        while (cursor.moveToNext()) {
+            userNameList.add(cursor.getString(cursor.getColumnIndex("userName")));
+        }
+        return userNameList;
+    }
+
+    public List<String> getUserEmail() {
+        List userEmailList = new ArrayList<String>();
+        Cursor cursor = db.query("UsersInfo", null, null, null, null, null, null);
+        while (cursor.moveToNext()) {
+            userEmailList.add(cursor.getString(cursor.getColumnIndex("email")));
+        }
+        return userEmailList;
+    }
+
+    public String getPasswordByUserName(String userName) {
+        Cursor cursor = db.query("UsersInfo", null, "userName=?", new String[]{userName}, null, null, null);
+        String result = null;
+        while (cursor.moveToNext()) {
+            result = cursor.getString(cursor.getColumnIndex("password"));
+        }
+        return result;
+    }
+    public String getPasswordByEmail(String email) {
+        Cursor cursor = db.query("UsersInfo", null, "email=?", new String[]{email}, null, null, null);
+        String result = null;
+        while (cursor.moveToNext()) {
+            result = cursor.getString(cursor.getColumnIndex("password"));
+        }
+        return result;
     }
 }

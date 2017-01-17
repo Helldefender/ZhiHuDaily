@@ -3,18 +3,21 @@ package com.example.helldefender.rvfunction.fragment;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 
-import com.example.helldefender.rvfunction.MyApplication;
+import com.example.helldefender.rvfunction.app.BaseFragment;
+import com.example.helldefender.rvfunction.app.MyApplication;
 import com.example.helldefender.rvfunction.R;
+import com.example.helldefender.rvfunction.util.ActivityUtil;
 import com.jakewharton.rxbinding.widget.RxTextView;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Subscription;
 import rx.functions.Func2;
 
 /**
@@ -23,23 +26,46 @@ import rx.functions.Func2;
 
 public class LoginFragment extends BaseFragment implements View.OnClickListener {
     public static final int FRAGMENT_REQUEST = 0X110;
+    public static final String FRAGMENT_LOGIN = "FRAGMENT_LOGIN";
     private EditText mUserNameET;
     private EditText mPassWordET;
     private Button loginBtn;
     private Button registerBtn;
 
+    private boolean isLogin;
+
+    private Button logoutBtn;
+    private ImageView avatar;
+    private EditText logoutET;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            isLogin = (boolean) getArguments().getSerializable(FRAGMENT_LOGIN);
+        }
+    }
+
     @Override
     protected void initView(View view, Bundle savedInstanceState) {
         handleView(view);
-        baseActivity.getSupportActionBar().setTitle("登录");
-        loginBtn.setOnClickListener(this);
-        registerBtn.setOnClickListener(this);
-        combineLatestEvent();
+        if (isLogin) {
+            baseActivity.getSupportActionBar().setTitle("个人主页");
+            logoutET.setText(MyApplication.sharedPreferences.getString("userName", ""));
+            logoutBtn.setOnClickListener(this);
+            ActivityUtil.handleImageToRound(getHoldingActivity(), "http://pic3.zhimg.com//0ecf2216c2612b04592126adc16affa2_im.jpg", avatar, 100, 100, 100);
+        } else {
+            baseActivity.getSupportActionBar().setTitle("登录");
+            loginBtn.setOnClickListener(this);
+            registerBtn.setOnClickListener(this);
+            combineLatestEvent();
+        }
+
     }
 
     @Override
     protected int getLayoutId() {
-        return R.layout.fragment_login;
+        return isLogin ? R.layout.fragment_logout : R.layout.fragment_login;
     }
 
     private void handleView(View view) {
@@ -47,12 +73,17 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener 
         mPassWordET = (EditText) view.findViewById(R.id.login_password_edit);
         loginBtn = (Button) view.findViewById(R.id.login_btn);
         registerBtn = (Button) view.findViewById(R.id.login_register);
+
+        logoutBtn = (Button) view.findViewById(R.id.logout_btn);
+        avatar = (ImageView) view.findViewById(R.id.logout_avator);
+        logoutET = (EditText) view.findViewById(R.id.logout_username);
     }
 
     private void combineLatestEvent() {
-        Observable<CharSequence> usernameObservable = RxTextView.textChanges(mUserNameET).skip(1);
-        Observable<CharSequence> passwordObservable = RxTextView.textChanges(mPassWordET).skip(1);
-        Subscription subscription = Observable.combineLatest(usernameObservable, passwordObservable, new Func2<CharSequence, CharSequence, Boolean>() {
+        //关于edittext获取焦点的问题
+        Observable<CharSequence> usernameObservable = RxTextView.textChanges(mUserNameET);
+        Observable<CharSequence> passwordObservable = RxTextView.textChanges(mPassWordET);
+        Observable.combineLatest(usernameObservable, passwordObservable, new Func2<CharSequence, CharSequence, Boolean>() {
             @Override
             public Boolean call(CharSequence userName, CharSequence password) {
                 boolean isUserNameValid = judgeUserName(userName);
@@ -105,8 +136,11 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener 
         }
     }
 
-    public static LoginFragment getInstance() {
+    public static LoginFragment getInstance(boolean isLogin) {
         LoginFragment loginFragment = new LoginFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(FRAGMENT_LOGIN, isLogin);
+        loginFragment.setArguments(bundle);
         return loginFragment;
     }
 
@@ -123,6 +157,11 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener 
                 RegisterFragment registerFragment = RegisterFragment.getInstance();
                 registerFragment.setTargetFragment(LoginFragment.this, FRAGMENT_REQUEST);
                 addFragment(registerFragment);
+                break;
+            case R.id.logout_btn:
+                MyApplication.editor.putBoolean("isLogin", false);
+                MyApplication.editor.commit();
+                getHoldingActivity().finish();
                 break;
         }
     }

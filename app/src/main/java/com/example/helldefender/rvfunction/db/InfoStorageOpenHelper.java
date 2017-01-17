@@ -25,6 +25,12 @@ public class InfoStorageOpenHelper extends SQLiteOpenHelper {
             + "id integer primary key autoincrement, "
             + "newId integer, "
             + "supportQuantity integer)";
+    public static final String CREATE_USERINFO = "create table UsersInfo ("
+            + "id integer primary key autoincrement, "
+            + "userName text, "
+            + "email text, "
+            + "password text)";
+
 
     public InfoStorageOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
@@ -36,6 +42,7 @@ public class InfoStorageOpenHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(CREATE_DETAILNEWS);
         sqLiteDatabase.execSQL(CREATE_SAVEDID);
         sqLiteDatabase.execSQL(CREATE_SUPPORT);
+        sqLiteDatabase.execSQL(CREATE_USERINFO);
     }
 
     @Override

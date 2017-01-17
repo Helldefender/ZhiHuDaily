@@ -11,7 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.helldefender.rvfunction.R;
-import com.example.helldefender.rvfunction.entity.TEntity;
+import com.example.helldefender.rvfunction.entity.NewsBean;
 import com.example.helldefender.rvfunction.util.ActivityUtil;
 
 import java.util.List;
@@ -21,12 +21,12 @@ import java.util.List;
  */
 
 public class NewsRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private List<TEntity.StoriesBean> data;
+    private List<NewsBean.StoriesBean> data;
     private Context mContext;
     public static final int NORMAL_ITEM = 0;
     public static final int HEADER_ITEM = 1;
 
-    public NewsRVAdapter(List<TEntity.StoriesBean> data, Context mContext) {
+    public NewsRVAdapter(List<NewsBean.StoriesBean> data, Context mContext) {
         this.data = data;
         this.mContext = mContext;
     }
@@ -41,26 +41,26 @@ public class NewsRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-        TEntity.StoriesBean story = data.get(position);
+        NewsBean.StoriesBean story = data.get(position);
         //必须先HeadItemHolder,继承关系，继承自NormalItemHolder
         if (holder instanceof HeadItemHolder) {
             bindHeadItem(story, (HeadItemHolder) holder);
-            if (mOnItemClickLitener != null) {
+            if (mOnItemClickListener != null) {
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        mOnItemClickLitener.onItemClick(holder.itemView, holder.getLayoutPosition());
+                        mOnItemClickListener.onItemClick(holder.itemView, holder.getLayoutPosition());
                     }
                 });
             }
         } else if (holder instanceof NormalItemHolder) {
             //注意括号
             bindNormalItem(story, ((NormalItemHolder) holder).title, ((NormalItemHolder) holder).image);
-            if (mOnItemClickLitener != null) {
+            if (mOnItemClickListener != null) {
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        mOnItemClickLitener.onItemClick(holder.itemView, holder.getLayoutPosition());
+                        mOnItemClickListener.onItemClick(holder.itemView, holder.getLayoutPosition());
                     }
                 });
             }
@@ -74,19 +74,22 @@ public class NewsRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 0)
+        if (position == 0 && !data.get(position).getData().equals("NO_DATE")) {
             return HEADER_ITEM;
+        } else if(position == 0 && data.get(position).getData().equals("NO_DATE")){
+            return NORMAL_ITEM;
+        }
         return data.get(position - 1).getData().equals(data.get(position).getData()) ? NORMAL_ITEM : HEADER_ITEM;
     }
 
-    public interface OnItemClickLitener {
+    public interface OnItemClickListener {
         void onItemClick(View view, int position);
     }
 
-    private OnItemClickLitener mOnItemClickLitener;
+    private OnItemClickListener mOnItemClickListener;
 
-    public void setOnItemClickLitener(OnItemClickLitener mOnItemClickLitener) {
-        this.mOnItemClickLitener = mOnItemClickLitener;
+    public void setOnItemClickListener(OnItemClickListener mOnItemClickListener) {
+        this.mOnItemClickListener = mOnItemClickListener;
     }
 
 
@@ -121,7 +124,7 @@ public class NewsRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
     }
 
-    private void bindNormalItem(TEntity.StoriesBean story, TextView textView, ImageView imageView) {
+    private void bindNormalItem(NewsBean.StoriesBean story, TextView textView, ImageView imageView) {
         textView.setText(story.getTitle());
         if (story.getImages() != null) {
             ActivityUtil.handleImageByGlide(mContext, story.getImages().get(0), imageView);
@@ -130,7 +133,7 @@ public class NewsRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
     }
 
-    private void bindHeadItem(TEntity.StoriesBean story, HeadItemHolder headItemHolder) {
+    private void bindHeadItem(NewsBean.StoriesBean story, HeadItemHolder headItemHolder) {
         bindNormalItem(story, headItemHolder.title, headItemHolder.image);
         headItemHolder.newsTime.setText(story.getWeekend());
     }

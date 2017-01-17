@@ -2,8 +2,8 @@ package com.example.helldefender.rvfunction.subscriber;
 
 import android.content.Context;
 
-import com.example.helldefender.rvfunction.util.ProgressCancelListener;
-import com.example.helldefender.rvfunction.util.ProgressDialogHandler;
+import com.example.helldefender.rvfunction.util.progress.ProgressCancelListener;
+import com.example.helldefender.rvfunction.util.progress.ProgressDialogHandler;
 
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
@@ -46,7 +46,6 @@ public class ProgressSubscriber<T> extends Subscriber<T> implements ProgressCanc
 
     @Override
     public void onCompleted() {
-        //停止,取消progressdialog progressdialog
         dismissProgressDialog();
     }
 
@@ -62,8 +61,6 @@ public class ProgressSubscriber<T> extends Subscriber<T> implements ProgressCanc
 
     @Override
     public void onNext(T t) {
-        // 启动 显示 停止
-        //抽象类，抽象方法 抽象
         if (subscriberOnNextListener != null) {
             subscriberOnNextListener.onNext(t);
         }

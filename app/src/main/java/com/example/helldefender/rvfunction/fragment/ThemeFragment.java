@@ -16,13 +16,16 @@ import android.widget.TextView;
 import com.example.helldefender.rvfunction.R;
 import com.example.helldefender.rvfunction.activity.AppActivity;
 import com.example.helldefender.rvfunction.activity.NewContentActivity;
+import com.example.helldefender.rvfunction.adapter.EditorRvAdapter;
 import com.example.helldefender.rvfunction.adapter.HeaderRvAdapter;
 import com.example.helldefender.rvfunction.adapter.NewsRVAdapter;
-import com.example.helldefender.rvfunction.entity.TEntity;
+import com.example.helldefender.rvfunction.app.BaseFragment;
+import com.example.helldefender.rvfunction.entity.NewsBean;
 import com.example.helldefender.rvfunction.http.HttpMethods;
 import com.example.helldefender.rvfunction.subscriber.ProgressSubscriber;
 import com.example.helldefender.rvfunction.subscriber.SubscriberOnNextListener;
 import com.example.helldefender.rvfunction.util.ActivityUtil;
+import com.jude.utils.JUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,15 +55,20 @@ public class ThemeFragment extends BaseFragment {
     private LinearLayout.LayoutParams linearLayoutParams;
     private TextView mAuthorTextView;
     private LinearLayout.LayoutParams authorTextLP;
-    private RecyclerView mAuthorRecyclerView;
+    private RecyclerView mEditorsRecyclerView;
+    private LinearLayoutManager mLinearLayoutManager;
     private LinearLayout.LayoutParams authorRvLP;
 
     private RecyclerView mRecyclerView;
     private HeaderRvAdapter mHeaderRvAdapter;
     private NewsRVAdapter mNewsRvAdapter;
-    private List<TEntity.StoriesBean> data;
+    private List<NewsBean.StoriesBean> data;
+
+    private List<NewsBean.EditorsBean> editorsData;
+    private EditorRvAdapter editorRvAdapter;
 
     @Override
+
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null)
@@ -75,13 +83,18 @@ public class ThemeFragment extends BaseFragment {
         appActivity.actionMenuView.getMenu().clear();
         appActivity.getMenuInflater().inflate(R.menu.theme_menu, appActivity.actionMenuView.getMenu());
 
-        subscriberOnNextListener = new SubscriberOnNextListener<TEntity>() {
+        subscriberOnNextListener = new SubscriberOnNextListener<NewsBean>() {
             @Override
-            public void onNext(TEntity tEntity) {
-                mThemeTextView.setText(tEntity.getDescription());
-                ActivityUtil.handleImageByGlide(getHoldingActivity(), tEntity.getImage(), mImageView);
-                for (TEntity.StoriesBean storiesBean : tEntity.getStories()) {
-                    storiesBean.setData("1");
+            public void onNext(NewsBean newsBean) {
+                mThemeTextView.setText(newsBean.getDescription());
+                ActivityUtil.handleImageByGlide(getHoldingActivity(), newsBean.getImage(), mImageView);
+
+                editorsData=newsBean.getEditors();
+                editorRvAdapter = new EditorRvAdapter(getHoldingActivity(),editorsData);
+                mEditorsRecyclerView.setAdapter(editorRvAdapter);
+
+                for (NewsBean.StoriesBean storiesBean : newsBean.getStories()) {
+                    storiesBean.setData("NO_DATE");
                     data.add(storiesBean);
                 }
                 mHeaderRvAdapter = new HeaderRvAdapter(mNewsRvAdapter);
@@ -90,7 +103,7 @@ public class ThemeFragment extends BaseFragment {
             }
         };
         httpRequestGet();
-        mNewsRvAdapter.setOnItemClickLitener(new NewsRVAdapter.OnItemClickLitener() {
+        mNewsRvAdapter.setOnItemClickListener(new NewsRVAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 Bundle bundle = new Bundle();
@@ -98,6 +111,7 @@ public class ThemeFragment extends BaseFragment {
                 Intent intent = new Intent(getHoldingActivity(), NewContentActivity.class);
                 intent.putExtras(bundle);
                 startActivity(intent);
+
             }
         });
     }
@@ -108,15 +122,14 @@ public class ThemeFragment extends BaseFragment {
     }
 
     private void httpRequestGet() {
-        HttpMethods.getInstance().getHttpInfo(new ProgressSubscriber<TEntity>(subscriberOnNextListener, getHoldingActivity()), id, 7);
-
+        HttpMethods.getInstance().getNewsThemes(new ProgressSubscriber<NewsBean>(subscriberOnNextListener, getHoldingActivity()), id);
     }
 
     private void handleView(View view) {
         mThemeContentLinearLayout = (LinearLayout) view.findViewById(R.id.layout_mainFragment);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getHoldingActivity()));
-        data = new ArrayList<TEntity.StoriesBean>();
+        data = new ArrayList<NewsBean.StoriesBean>();
 
         headLinearLayout = new LinearLayout(getHoldingActivity());
         headLinearLayout.setOrientation(LinearLayout.VERTICAL);
@@ -124,13 +137,13 @@ public class ThemeFragment extends BaseFragment {
         headLinearLayout.setLayoutParams(headLP);
 
         mRelativeLayout = new RelativeLayout(getHoldingActivity());
-        mRelativeLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 500);
+        mRelativeLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, JUtils.dip2px(250));
         mRelativeLayout.setLayoutParams(mRelativeLayoutParams);
 
         mImageView = new ImageView(getHoldingActivity());
         mImageView.setImageResource(R.mipmap.ic_launcher);
         mImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        imageRelativeLP = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 500);
+        imageRelativeLP = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, JUtils.dip2px(250));
         mImageView.setLayoutParams(imageRelativeLP);
         mRelativeLayout.addView(mImageView);
 
@@ -139,34 +152,38 @@ public class ThemeFragment extends BaseFragment {
         mThemeTextView.setTextSize(25);
         themeTextLP = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         themeTextLP.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-        themeTextLP.leftMargin = 50;
-        themeTextLP.rightMargin = 10;
-        themeTextLP.bottomMargin = 20;
+        themeTextLP.leftMargin = JUtils.dip2px(20);
+        themeTextLP.rightMargin = JUtils.dip2px(10);
+        themeTextLP.bottomMargin = JUtils.dip2px(10);
         mThemeTextView.setLayoutParams(themeTextLP);
         mRelativeLayout.addView(mThemeTextView);
 
         mLinearLayout = new LinearLayout(getHoldingActivity());
         mLinearLayout.setPadding(10, 10, 10, 10);
         mLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
-        linearLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 200);
+        linearLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, JUtils.dip2px(80));
         mLinearLayout.setLayoutParams(linearLayoutParams);
 
         mAuthorTextView = new TextView(getHoldingActivity());
         mAuthorTextView.setTextSize(20);
         mAuthorTextView.setText("主编");
         authorTextLP = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        authorTextLP.topMargin = 20;
+        authorTextLP.topMargin = JUtils.dip2px(20);
         mAuthorTextView.setLayoutParams(authorTextLP);
         mLinearLayout.addView(mAuthorTextView);
 
-        mAuthorRecyclerView = new RecyclerView(getHoldingActivity());
-        mAuthorRecyclerView.setLayoutManager(new LinearLayoutManager(getHoldingActivity()));
+        mEditorsRecyclerView = new RecyclerView(getHoldingActivity());
+        mEditorsRecyclerView.setLayoutManager(new LinearLayoutManager(getHoldingActivity()));
         authorRvLP = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        authorRvLP.leftMargin = 15;
-        authorRvLP.topMargin = 5;
-        authorRvLP.bottomMargin = 5;
-        mAuthorRecyclerView.setLayoutParams(authorRvLP);
-        mLinearLayout.addView(mAuthorRecyclerView);
+        authorRvLP.leftMargin = JUtils.dip2px(20);
+        authorRvLP.topMargin = JUtils.dip2px(15);
+        authorRvLP.bottomMargin = JUtils.dip2px(20);
+        mEditorsRecyclerView.setLayoutParams(authorRvLP);
+        mLinearLayout.addView(mEditorsRecyclerView);
+
+        mLinearLayoutManager = new LinearLayoutManager(getHoldingActivity());
+        mLinearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        mEditorsRecyclerView.setLayoutManager(mLinearLayoutManager);
 
         headLinearLayout.addView(mRelativeLayout);
         headLinearLayout.addView(mLinearLayout);

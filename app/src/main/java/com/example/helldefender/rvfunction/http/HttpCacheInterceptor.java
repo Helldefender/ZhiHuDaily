@@ -3,7 +3,6 @@ package com.example.helldefender.rvfunction.http;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
 
 import com.example.helldefender.rvfunction.app.MyApplication;
 
@@ -23,7 +22,6 @@ public class HttpCacheInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
         if (!isNetworkAvailable()) {
-            Log.i("ss", "ss");
             request = request.newBuilder().cacheControl(CacheControl.FORCE_CACHE).build();
         }
         Response originalResponse = chain.proceed(request);

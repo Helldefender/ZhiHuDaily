@@ -1,6 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/mColorBackground"
+    android:paddingBottom="40dp"
+    android:paddingLeft="40dp"
+    android:paddingRight="60dp"
+    android:paddingTop="150dp">
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/register_username_text"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:text="用户名"
+        android:textColor="?attr/mColorText" />
+
+    <EditText
+        android:id="@+id/register_username_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="30dp"
+        android:layout_toRightOf="@id/register_username_text"
+        android:background="@drawable/edit_background"
+        android:hint="用户名长度为3至8位" />
+
+    <TextView
+        android:id="@+id/register_password_text"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/register_username_text"
+        android:layout_marginTop="40dp"
+        android:text="密码"
+        android:textColor="?attr/mColorText" />
+
+    <EditText
+        android:id="@+id/register_password_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/register_username_edit"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="25dp"
+        android:layout_toRightOf="@id/register_password_text"
+        android:background="@drawable/edit_background"
+        android:hint="密码长度为5至8位" />
+
+    <TextView
+        android:id="@+id/register_email_text"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/register_password_text"
+        android:layout_marginTop="40dp"
+        android:text="邮箱"
+        android:textColor="?attr/mColorText" />
+
+    <EditText
+        android:id="@+id/register_email_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/register_password_edit"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="40dp"
+        android:layout_toRightOf="@id/register_email_text"
+        android:background="@drawable/edit_background" />
+
+    <Button
+        android:id="@+id/register_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/register_email_edit"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="60dp"
+        android:background="#00000000"
+        android:enabled="false"
+        android:text="注册"
+        android:textColor="?attr/mColorText" />
+</RelativeLayout>
+

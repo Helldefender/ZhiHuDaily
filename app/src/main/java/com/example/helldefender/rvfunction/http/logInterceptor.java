@@ -11,7 +11,7 @@ import okhttp3.Response;
  * Created by Helldefender on 2016/12/1.
  */
 
-public class logInterceptor implements Interceptor {
+public class LogInterceptor implements Interceptor {
     private static String TAG = "LogIntercept";
     private static final Charset UTD0 = Charset.forName("utf-8");
 
@@ -23,7 +23,6 @@ public class logInterceptor implements Interceptor {
         response = chain.proceed(request);
         long time2 = System.nanoTime();
         double time = time2 - time1 / 1e6d;
-
         return null;
     }
 

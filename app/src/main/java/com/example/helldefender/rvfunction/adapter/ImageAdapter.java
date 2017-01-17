@@ -1,0 +1,55 @@
+package com.example.helldefender.rvfunction.adapter;
+
+import android.support.v4.view.PagerAdapter;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.widget.RelativeLayout;
+
+import java.util.ArrayList;
+
+/**
+ * Created by Helldefender on 2016/10/29.
+ */
+
+public class ImageAdapter extends PagerAdapter {
+    private ArrayList<RelativeLayout> viewList;
+
+    public ImageAdapter(ArrayList<RelativeLayout> viewList) {
+        this.viewList = viewList;
+    }
+
+    @Override
+
+    public int getCount() {
+        return Integer.MAX_VALUE;
+    }
+
+    @Override
+    public boolean isViewFromObject(View view, Object object) {
+        return view==object;
+    }
+
+    @Override
+    public Object instantiateItem(ViewGroup container, int position) {
+        position%=viewList.size();
+        //用户左滑，position出现负值，对负值进行处理，使其落在正确的区间内
+        if (position < 0) {
+            position = viewList.size() + position;
+        }
+        RelativeLayout view = viewList.get(position);
+        //如果view在之前已经添加到了一个父组件，则必须先remove,封否则会抛出异常   他所谓的父组件是什么？ArrayList ?ViewGroup?LinearLayout RelativeLayout
+        ViewParent viewParent=view.getParent();
+        if (viewParent != null) {
+            ViewGroup viewGroup = (ViewGroup) viewParent;
+            viewGroup.removeView(view);
+        }
+        container.addView(view);
+        return view;
+    }
+
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object) {
+
+    }
+}

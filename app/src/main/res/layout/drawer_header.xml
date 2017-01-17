@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/drawer_header_layout"
+    android:background="?attr/mColorAccent">
+    <ImageView
+        android:id="@+id/drawer_header_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/drawer_header_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="?attr/mColorText"
+        android:layout_margin="10dp"
+        android:clickable="true"
+        android:text="请登录"
+        android:drawableLeft="@mipmap/ic_launcher"
+        android:gravity="center_horizontal"
+        android:textSize="16sp"
+        android:drawablePadding="10dp"/>
+</LinearLayout>

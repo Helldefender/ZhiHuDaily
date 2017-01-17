@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">知乎日报</string>
+    <string name="open">OPEN_DRAWER</string>
+    <string name="close">CLOSE_DRAWER</string>
+    <string name="home">1</string>
+    <string name="daily_psy">2</string>
+    <string name="user_recommend">3</string>
+    <string name="movie">4</string>
+    <string name="interesting">5</string>
+    <string name="design">6</string>
+    <string name="business">7</string>
+    <string name="economic">8</string>
+    <string name="internet_security">9</string>
+    <string name="games">10</string>
+    <string name="music">11</string>
+    <string name="comic">12</string>
+    <string name="physical">13</string>
+</resources>

@@ -4,7 +4,7 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.example.helldefender.rvfunction.db.InfoStorageManager;
+import com.example.helldefender.rvfunction.data.db.InfoStorageManager;
 import com.jude.utils.JUtils;
 
 /**

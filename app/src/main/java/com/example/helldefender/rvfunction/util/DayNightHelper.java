@@ -3,7 +3,7 @@ package com.example.helldefender.rvfunction.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.example.helldefender.rvfunction.entity.DayNight;
+import com.example.helldefender.rvfunction.data.entity.DayNight;
 
 /**
  * Created by Helldefender on 2016/11/8.
